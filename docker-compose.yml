@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  proxy-server:
+    build: ./proxy-server
+    volumes:
+      - ./proxy-server:/app
+    env_file:
+      - ./proxy-server/.env
+    depends_on:
+      - soketi
+      - rethinkdb
+      - hivemq
+    ports:
+      - "4000:4000"
+    
+
+  soketi:
+    build: ./soketi
+    env_file:
+      - ./soketi/.env
+    ports:
+      - "6001:6001"
+
+
+  rethinkdb:
+    image: rethinkdb:latest
+    ports:
+      - "28015:28015"
+      - "8080:8080"
+    volumes:
+      - rethinkdb_data:/data
+
+  hivemq:
+    image: hivemq/hivemq4
+    ports:
+      - "1883:1883"
+      - "8081:8080"
+    volumes:
+      - hivemq_data:/opt/hivemq
+
+volumes:
+  rethinkdb_data:
+  hivemq_data:
